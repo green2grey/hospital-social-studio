@@ -1,6 +1,7 @@
-import { openai, MODELS } from "@/lib/openai";
+import { getOpenAI, MODELS } from "@/lib/openai";
 
 export async function reviewCaptionSafety(caption: string): Promise<{ allow: boolean; reason?: string }> {
+  const openai = getOpenAI();
   const r = await openai.responses.create({
     model: MODELS.captions,
     input: [

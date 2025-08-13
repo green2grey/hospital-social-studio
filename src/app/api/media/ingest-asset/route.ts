@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { openai, MODELS } from "@/lib/openai";
+import { getOpenAI, MODELS } from "@/lib/openai";
 import { prisma } from "@/lib/db/prisma";
 
 export async function POST(req: NextRequest) {
   const { storageUrl, originalName } = await req.json();
   if (!storageUrl) return NextResponse.json({ error: "storageUrl required" }, { status: 400 });
 
+  const openai = getOpenAI();
   const r = await openai.responses.create({
     model: MODELS.captions,
     input: [

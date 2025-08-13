@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { openai, MODELS } from "@/lib/openai";
+import { getOpenAI, MODELS } from "@/lib/openai";
 
 export async function POST(req: NextRequest) {
   const { prompt, size } = await req.json();
   if (!prompt) return NextResponse.json({ error: "prompt required" }, { status: 400 });
+  const openai = getOpenAI();
   const img = await openai.images.generate({
     model: MODELS.image,
     prompt,

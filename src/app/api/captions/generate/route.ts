@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { openai, MODELS } from "@/lib/openai";
+import { getOpenAI, MODELS } from "@/lib/openai";
 import { BRAND_SYSTEM, STYLE_EXAMPLES } from "@/lib/brand";
 
 export async function POST(req: NextRequest) {
@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
     `Style cues: ${STYLE_EXAMPLES.join(" | ")}`,
   ].join("\n");
 
+  const openai = getOpenAI();
   const r = await openai.responses.create({
     model: MODELS.captions,
     input: [
