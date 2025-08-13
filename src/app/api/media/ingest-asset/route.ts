@@ -21,10 +21,10 @@ export async function POST(req: NextRequest) {
     data: { storageUrl, originalName, caption, tags: [] },
   });
 
+  const vecString = `[${(emb.data[0].embedding as number[]).join(",")}]`;
   await prisma.$executeRawUnsafe(
-    `update "Asset" set embedding = $1 where id = $2`,
-    // vector literal expects array; use pgvector input using array literal
-    (emb.data[0].embedding as number[]),
+    `update "Asset" set embedding = $1::vector where id = $2`,
+    vecString,
     created.id
   );
 
