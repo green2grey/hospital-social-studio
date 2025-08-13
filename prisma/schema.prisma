@@ -63,7 +63,7 @@ model Asset {
   height        Int?
   tags          String[]
   caption       String?
-  embedding     Bytes?   // pgvector via Bytes
+  embedding     Unsupported("vector")?   // pgvector vector; accessed via raw SQL
   createdAt     DateTime @default(now())
 }
 
