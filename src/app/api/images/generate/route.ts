@@ -9,7 +9,8 @@ export async function POST(req: NextRequest) {
     prompt,
     size: size ?? "1024x1024",
   });
-  const base64 = img?.data?.[0]?.b64_json;
+  const data = (img as any)?.data as Array<{ b64_json?: string }> | undefined;
+  const base64 = data?.[0]?.b64_json ?? null;
   if (!base64) {
     return NextResponse.json({ error: "image generation failed" }, { status: 502 });
   }
