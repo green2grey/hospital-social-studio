@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Account {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  type         String   // "self" | "peer"
+  igUserId     String?
+  displayName  String?
+  createdAt    DateTime @default(now())
+  posts        IgPost[]
+}
+
+model IgPost {
+  id           String   @id @default(cuid())
+  accountId    String
+  igMediaId    String   @unique
+  caption      String?
+  mediaType    String
+  mediaUrl     String?
+  permalink    String?
+  timestamp    DateTime?
+  metricsJson  Json?
+  Account      Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+}
+
+model Idea {
+  id          String   @id @default(cuid())
+  title       String
+  rationale   String?
+  source      String   // "discovery" | "manual"
+  status      String   // "open" | "drafted" | "done"
+  createdAt   DateTime @default(now())
+  drafts      Draft[]
+}
+
+model Draft {
+  id               String   @id @default(cuid())
+  ideaId           String?
+  subject          String
+  caption          String
+  hashtags         String[]
+  altText          String
+  selectedAssetIds String[] // asset ids chosen for the post
+  status           String   // "draft" | "approved" | "scheduled" | "published"
+  scheduledAt      DateTime?
+  publishedIgId    String?
+  createdAt        DateTime @default(now())
+  Idea             Idea?    @relation(fields: [ideaId], references: [id])
+}
+
+model Asset {
+  id            String   @id @default(cuid())
+  storageUrl    String
+  originalName  String?
+  width         Int?
+  height        Int?
+  tags          String[]
+  caption       String?
+  embedding     Bytes?   // pgvector via Bytes
+  createdAt     DateTime @default(now())
+}
+
+model Job {
+  id          String   @id @default(cuid())
+  kind        String   // "ingest" | "recommend" | "publish"
+  payloadJson Json
+  status      String   // "queued" | "running" | "done" | "error"
+  error       String?
+  runAt       DateTime @default(now())
+  finishedAt  DateTime?
+}
